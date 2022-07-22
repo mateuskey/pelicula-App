@@ -7,6 +7,7 @@ import 'package:peliculas/providers/movies_providers.dart';
 void main() => runApp(AppState());
 
 class AppState extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
