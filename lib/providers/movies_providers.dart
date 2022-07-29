@@ -13,6 +13,8 @@ class MoviesProvider extends ChangeNotifier {
   List<Movie> onDisplayMovie = [];
   List<Movie> popularMovies = [];
 
+  int __popularPage = 0;
+
   MoviesProvider() {
     print('MoviesProvider inicializado');
 
@@ -20,19 +22,20 @@ class MoviesProvider extends ChangeNotifier {
     this.getPopularMovies();
   }
 
-  getOnDisplayMovies() async {
-    // 1.Es la base del URL,
-    // 2.Es el segmento propio
-    // 3. Son los parámetros del query que es  mapa donde se puede especificar lo que uno necesita.
-    var url = Uri.https(_baseUrl, '3/movie/now_playing',
-        {'api_key': _apiKey, 'language': _language, 'page': '1'});
+  Future<String> _getJsonData(String endpoint, [int page = 1]) async {
+    var url = Uri.https(_baseUrl, endpoint,
+        {'api_key': _apiKey, 'language': _language, 'page': '$page'});
 
     // Await the http get response, then decode the json-formatted response.
     final response = await http.get(url);
+    return response.body;
+  }
 
-    final nowPlayingResponse = NowPlayingResponse.fromJson(response.body);
+  getOnDisplayMovies() async {
+    
+    final jsonData = await this._getJsonData('3/movie/now_playing');
+    final nowPlayingResponse = NowPlayingResponse.fromJson(jsonData);
 
-    // print(nowPlayingResponse.results[1].title);
     onDisplayMovie = nowPlayingResponse.results;
 
     //notify sirve para avisar a todos los widgets a redibujar los cambios necesarios
@@ -40,17 +43,14 @@ class MoviesProvider extends ChangeNotifier {
   }
 
   getPopularMovies() async {
-    var url = Uri.https(_baseUrl, '3/movie/popular',
-        {'api_key': _apiKey, 'language': _language, 'page': '1'});
 
-    // Await the http get response, then decode the json-formatted response.
-    final response = await http.get(url);
+    __popularPage++;
 
-    final popularResponse = PopularResponse.fromJson(response.body);
+    final jsonData = await this._getJsonData('3/movie/popular', __popularPage);
+    final popularResponse = PopularResponse.fromJson(jsonData);
 
     // Mantener las peliculas que ya se tiene, para concatenar todos los resultados
     popularMovies = [...popularMovies, ...popularResponse.results];
-    print(popularMovies[0]);
     //notify sirve para avisar a todos los widgets a redibujar los cambios necesarios
     notifyListeners();
   }

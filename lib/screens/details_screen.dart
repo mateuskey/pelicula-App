@@ -1,27 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:peliculas/widgets/casting_cards.dart';
 
+import '../models/models.dart';
+
 class DetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
 
     // tod-o: cambiar por una instancia de movie
-    final String movie =
-        ModalRoute.of(context)?.settings.arguments.toString() ?? 'no-movie';
+    final Movie movie = ModalRoute.of(context)!.settings.arguments as Movie;
+    print(movie.title);
 
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          _CustomAppBar(),
+          
+          _CustomAppBar(movie),
           SliverList(
             delegate: SliverChildListDelegate([
-              _PosterAndTitle(),
-              _Overview(),
-              _Overview(),
-              _Overview(),
-              _Overview(),
-              _Overview(),
+              _PosterAndTitle(movie),
+              _Overview(movie),
               CastingCards(),
 
             ]),
@@ -33,6 +32,9 @@ class DetailsScreen extends StatelessWidget {
 }
 
 class _CustomAppBar extends StatelessWidget {
+  final Movie movie;
+  const _CustomAppBar(this.movie);
+
   // SliverAppBar es parecio a AppBar
   @override
   Widget build(BuildContext context) {
@@ -48,15 +50,16 @@ class _CustomAppBar extends StatelessWidget {
           color: Colors.black12,
           width: double.infinity,
           alignment: Alignment.bottomCenter,
-          padding: EdgeInsets.only(bottom: 10),
+          padding: EdgeInsets.only(bottom: 10, left: 10, right: 10),
           child: Text(
-            'movie.tittle',
-            style: TextStyle( fontSize: 16),
+            movie.title,
+            style: TextStyle(fontSize: 16),
+            textAlign: TextAlign.center,
           ),
         ),
         background: FadeInImage(
           placeholder: AssetImage('assets/loading.gif'),
-          image: NetworkImage('https://via.placeholder.com/500x300'),
+          image: NetworkImage(movie.fullBackdropPath),
           fit: BoxFit.cover,
         ),
       ),
@@ -65,42 +68,68 @@ class _CustomAppBar extends StatelessWidget {
 }
 
 class _PosterAndTitle extends StatelessWidget {
+  final Movie movie;
+  const _PosterAndTitle(this.movie);
 
   @override
   Widget build(BuildContext context) {
 
     final TextTheme textTheme = Theme.of(context).textTheme;
+    final size = MediaQuery.of(context);
 
     return Container(
-      margin: EdgeInsets.only( top: 20),
-      padding: EdgeInsets.symmetric( horizontal: 20),
+
+      margin: EdgeInsets.only(top: 20),
+      padding: EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: FadeInImage(
-              placeholder: AssetImage('assets/no-image.jpg'), 
-              image: NetworkImage('https://via.placeholder.com/200x300'),
+              placeholder: AssetImage('assets/no-image.jpg'),
+              image: NetworkImage(movie.fullPosterImg),
               height: 150,
             ),
           ),
 
-          SizedBox( width: 20,),
+          SizedBox(
+            width: 20,
+          ),
 
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('movie.title', style: textTheme.headline5, overflow: TextOverflow.ellipsis, maxLines:  2),
-              Text('movie.originalTitle', style: textTheme.headline5, overflow: TextOverflow.ellipsis),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
 
-              Row(
-                children: [
-                  Icon( Icons.star_half_outlined, size: 20, color: Colors.blue,),
-                  SizedBox( width: 5,),
-                  Text('movie.voteAverage', style: textTheme.caption)
-                ],
-              ),
-            ],
+                Text(movie.title,
+                    style: textTheme.headline5,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2),
+                Text(
+                  movie.originalTitle,
+                  style: textTheme.subtitle1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.star_half_outlined,
+                      size: 20,
+                      color: Colors.blue,
+                    ),
+
+                    SizedBox(
+                      width: 5,
+                    ),
+
+                    //Tambien se puede utilizar movie.voteAverage.toString()
+                    Text('${movie.voteAverage}',
+                        style: textTheme.caption,
+                        overflow: TextOverflow.ellipsis)
+                  ],
+                ),
+              ],
+            ),
           )
         ],
       ),
@@ -109,6 +138,8 @@ class _PosterAndTitle extends StatelessWidget {
 }
 
 class _Overview extends StatelessWidget {
+  final Movie movie;
+  const _Overview(this.movie);
 
   @override
   Widget build(BuildContext context) {
@@ -116,14 +147,13 @@ class _Overview extends StatelessWidget {
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 30 , vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
       child: Text(
-        'Esse Lorem adipisicing qui quis laboris do velit. Qui voluptate laborum irure laboris quis ea in excepteur voluptate cupidatat eu quis minim amet. In duis aliqua consectetur qui pariatur Lorem aliquip. Ullamco dolore fugiat cillum ad laborum eiusmod amet eiusmod do. Qui eiusmod minim officia proident in exercitation consectetur culpa aliquip elit tempor. Tempor ea ea laborum do et. Eiusmod cupidatat aliquip ad pariatur dolor ea ad enim ad adipisicing ea ea',
+        movie.overview,
         textAlign: TextAlign.justify,
         style: textTheme.subtitle1,
         
       ),
-      
     );
   }
 }

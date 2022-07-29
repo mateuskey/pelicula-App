@@ -10,6 +10,7 @@ class HomeScreen extends StatelessWidget {
     final moviesProvider = Provider.of<MoviesProvider>(context);
 
     return Scaffold(
+
       appBar: AppBar(
         title: Center(child: Text('Peliculas en cines')),
         elevation: 0,
@@ -20,15 +21,22 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
+      
       // SigleChild sirve para hacer scroll cuando hay mas archivos
       body: SingleChildScrollView(
         child: Column(
           children: [
+            
             // Tarjetas principales
             CardSwiper(movies: moviesProvider.onDisplayMovie),
+            
 
             // Slider peliculas
-            MovieSlider(),
+            MovieSlider(
+              movies: moviesProvider.popularMovies,
+              title: 'Populares',
+              onNextPage: () => moviesProvider.getPopularMovies(), //
+            ),
           ],
         ),
       ),
