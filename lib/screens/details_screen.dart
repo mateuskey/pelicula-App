@@ -10,7 +10,7 @@ class DetailsScreen extends StatelessWidget {
 
     // tod-o: cambiar por una instancia de movie
     final Movie movie = ModalRoute.of(context)!.settings.arguments as Movie;
-    print(movie.title);
+    //print(movie.title);
 
     return Scaffold(
       body: CustomScrollView(
@@ -21,7 +21,7 @@ class DetailsScreen extends StatelessWidget {
             delegate: SliverChildListDelegate([
               _PosterAndTitle(movie),
               _Overview(movie),
-              CastingCards(),
+              CastingCards(movie.id),
 
             ]),
           ),
